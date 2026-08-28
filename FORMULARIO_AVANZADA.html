@@ -195,7 +195,7 @@
 /* =========================================================
    CONFIGURACIÓN DE ENVÍO AUTOMÁTICO A POWER AUTOMATE
    ========================================================= */
-const POWER_AUTOMATE_URL = "https://default46bb22b84c2c40ff83607b63348212.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e893a20de4bb4190bfe756162dbdaca8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jj3siGaIDbqbYUuc78oDiA0KGLOSz5OIfgTCQ3JwWhk"
+const POWER_AUTOMATE_URL ="https://default46bb22b84c2c40ff83607b63348212.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e893a20de4bb4190bfe756162dbdaca8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jj3siGaIDbqbYUuc78oDiA0KGLOSz5OIfgTCQ3JwWhk"
 const LS_BASE_KEY = "baseCuentasAvanzada";
 const LS_REGISTROS_KEY = "registrosMigracionAvanzada"; 
 const LS_PENDIENTES_KEY = "pendientesEnvioAvanzada";
@@ -460,13 +460,19 @@ document.getElementById("btnLimpiarRegistros").addEventListener("click", functio
    ENVÍO AUTOMÁTICO A POWER AUTOMATE (con reintentos)
    ========================================================= */
 async function enviarAPowerAutomate(payload){
-  const payloadConClave = { ...payload, clave: CLAVE_SEGURIDAD };
+
   const resp = await fetch(POWER_AUTOMATE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payloadConClave)
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
   });
-  if(!resp.ok) throw new Error("HTTP " + resp.status);
+
+  if(!resp.ok){
+    throw new Error("HTTP " + resp.status);
+  }
+
   return true;
 }
 

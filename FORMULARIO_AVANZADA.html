@@ -222,22 +222,42 @@ function pintarEstadoBase(n, origen){
 
 async function cargarBaseDesdeRepositorio(){
   try {
-    const resp = await fetch(BASE_JSON_URL, { cache: "no-store" });
-    if(!resp.ok) throw new Error("No se encontró base_cuentas.json (HTTP " + resp.status + ")");
-    const data = await resp.json();
+
+    console.log("Iniciando carga...");
+    console.log("URL:", BASE_JSON_URL);
+
+    const resp = await fetch(BASE_JSON_URL, {
+      cache: "no-store"
+    });
+
+    console.log("Status HTTP:", resp.status);
+
+    if(!resp.ok){
+      throw new Error("HTTP " + resp.status);
+    }
+
+    const texto = await resp.text();
+
+    console.log("Primeros caracteres:");
+    console.log(texto.substring(0,300));
+
+    const data = JSON.parse(texto);
+
+    console.log("Base cargada:", data);
+
     baseCuentas = data;
     setBaseCache(data);
-    pintarEstadoBase(Object.keys(data).length, "· descargada del servidor");
+
+    pintarEstadoBase(
+      Object.keys(data).length,
+      "· descargada del servidor"
+    );
+
   } catch(err){
-    const cache = getBaseCache();
-    const n = Object.keys(cache).length;
-    baseCuentas = cache;
-    if(n > 0){
-      pintarEstadoBase(n, "· modo sin conexión (última copia guardada)");
-    } else {
-      pintarEstadoBase(0, "");
-    }
-    console.warn("No se pudo descargar base_cuentas.json:", err);
+
+    console.error("ERROR REAL:", err);
+
+    pintarEstadoBase(0,"");
   }
 }
 

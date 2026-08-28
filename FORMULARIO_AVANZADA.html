@@ -141,6 +141,7 @@
             <option value="">Puertos en NAP copados</option>
             <option value="">No se encuentra dirección del cliente / Local</option>
             <option value="">Problemas de infraestructura (Ducteria / Obra Civil / Etc)</option>
+            <option value="">Factibilidad negativa por Visor</option>
             <option value="">Cliente no acepta migración</option>
           </select>
         </div>
@@ -206,7 +207,9 @@ function getBaseCache() {
   try { return JSON.parse(localStorage.getItem(LS_BASE_KEY) || "{}"); }
   catch(e){ return {}; }
 }
-function setBaseCache(obj){ localStorage.setItem(LS_BASE_KEY, JSON.stringify(obj)); }
+function setBaseCache(obj){
+  // No guardar bases grandes en localStorage
+}
 function normKey(v){ return String(v ?? "").trim(); }
 
 function pintarEstadoBase(n, origen){

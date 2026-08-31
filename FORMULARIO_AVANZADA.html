@@ -107,6 +107,7 @@
       <div class="form-group">
         <label>N° Documento Técnico</label>
         <input type="text" id="tecnico" placeholder="Documento Técnico" inputmode="numeric" pattern="[0-9]*"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')"/>
       </div>
 
       <!-- Gestión con el cliente -->

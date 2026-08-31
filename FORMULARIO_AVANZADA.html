@@ -550,7 +550,7 @@ document.getElementById("fieldForm").addEventListener("submit", async function(e
     return;
   }
 
-  const payload = {
+ const payload = {
     id: `${cuenta}_${Date.now()}`,
     cuenta: cuenta,
     nombre: document.getElementById("regNombre").value,
@@ -560,13 +560,22 @@ document.getElementById("fieldForm").addEventListener("submit", async function(e
     tipoPredio: document.getElementById("regTipoPredio").value,
     aliado: document.getElementById("regAliado").value,
     estadoHomologado: document.getElementById("regEstadoHomologado").value,
+
+    latitud: ubicacionActual ? ubicacionActual.lat : "",
+    longitud: ubicacionActual ? ubicacionActual.lon : "",
+
     tecnico: tecnico,
     aceptaMigracion: acepta,
     comentario: comentario,
     fechaReagendamiento: fechaReagenda,
-    fotos: { foto1: fotos.foto1, foto2: fotos.foto2 },
+
+    fotos: {
+        foto1: fotos.foto1,
+        foto2: fotos.foto2
+    },
+
     fechaRegistro: new Date().toISOString()
-  };
+};
 
   const registros = getRegistros();
   registros.push(payload);

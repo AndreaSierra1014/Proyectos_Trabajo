@@ -71,7 +71,8 @@
     <div class="form-group">
       <label for="search">Buscar por N° de Cuenta RR</label>
       <div class="row2">
-        <input type="numeric" id="search" placeholder="Ej: 4785435" inputmode="numeric" />
+        <input type="text" id="search" placeholder="Ej: 4785435" inputmode="numeric" pattern="[0-9]*"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')"/>
         <div class="row2-fixed">
           <button type="button" class="btn btn-buscar" id="btnBuscar">Buscar</button>
         </div>

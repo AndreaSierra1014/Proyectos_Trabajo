@@ -533,15 +533,25 @@ document.getElementById("fieldForm").addEventListener("submit", async function(e
   }
 
   let comentario = "", fechaReagenda = "";
-  if(acepta === "NO"){
-    comentario = document.getElementById("comentarioNo").value.trim();
+  if(acepta === "SI"){
     fechaReagenda = document.getElementById("fechaReagenda").value;
-    if(!comentario || !fechaReagenda){
-      statusMsg.className = "status err";
-      statusMsg.innerText = "✖ Si el cliente no acepta, indica el comentario y la nueva fecha de reagendamiento.";
-      return;
+
+    if(!fechaReagenda){
+        statusMsg.className = "status err";
+        statusMsg.innerText = "✖ Debe indicar la fecha de migración.";
+        return;
     }
-  }
+}
+
+if(acepta === "NO"){
+    comentario = document.getElementById("RazonNoMigracion").value;
+
+    if(!comentario){
+        statusMsg.className = "status err";
+        statusMsg.innerText = "✖ Debe indicar la razón de no migración.";
+        return;
+    }
+}
 
   const tecnico = document.getElementById("tecnico").value.trim();
   if(!tecnico){

@@ -345,9 +345,43 @@ document.getElementById("search").addEventListener("keydown", function(e){
    MOSTRAR/OCULTAR BLOQUES SEGÚN ACEPTACIÓN DEL CLIENTE
    ========================================================= */
 document.getElementById("aceptaMigracion").addEventListener("change", function(e){
-  const val = e.target.value;
-  document.getElementById("bloqueSi").classList.toggle("oculto", val !== "SI");
-  document.getElementById("bloqueNo").classList.toggle("oculto", val !== "NO");
+    const val = e.target.value;
+
+    const bloqueSi = document.getElementById("bloqueSi");
+    const bloqueNo = document.getElementById("bloqueNo");
+
+    const fechaReagenda = document.getElementById("fechaReagenda");
+    const razonNoMigracion = document.getElementById("RazonNoMigracion");
+
+    // Mostrar u ocultar bloques
+    bloqueSi.classList.toggle("oculto", val !== "SI");
+    bloqueNo.classList.toggle("oculto", val !== "NO");
+
+    // Activar/desactivar validaciones según la respuesta
+    if(val === "SI"){
+
+        fechaReagenda.required = true;
+        razonNoMigracion.required = false;
+
+        // Limpiar razón de no migración
+        razonNoMigracion.value = "";
+
+    } else if(val === "NO"){
+
+        fechaReagenda.required = false;
+        razonNoMigracion.required = true;
+
+        // Limpiar fecha
+        fechaReagenda.value = "";
+
+    } else {
+
+        fechaReagenda.required = false;
+        razonNoMigracion.required = false;
+
+        fechaReagenda.value = "";
+        razonNoMigracion.value = "";
+    }
 });
 
 /* =========================================================

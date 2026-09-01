@@ -684,17 +684,30 @@ if(acepta === "NO"){
 
   btnEnviar.disabled = false;
 
-  document.getElementById("fieldForm").reset();
-  document.getElementById("tecnico").value = tecnico;
-  document.getElementById("bloqueSi").classList.add("oculto");
-  document.getElementById("bloqueNo").classList.add("oculto");
-  document.getElementById("preview1").style.display = "none";
-  document.getElementById("preview2").style.display = "none";
-  fotos = { foto1: "", foto2: "" };
-  document.getElementById("search").value = "";
-  limpiarCamposCliente();
+limpiarFormularioNuevoRegistro();
 });
+function limpiarFormularioNuevoRegistro(){
+    document.getElementById("fieldForm").reset();
+    document.getElementById("search").value = "";
 
+    limpiarCamposCliente();
+
+    document.getElementById("bloqueSi").classList.add("oculto");
+    document.getElementById("bloqueNo").classList.add("oculto");
+
+    document.getElementById("preview1").src = "";
+    document.getElementById("preview2").src = "";
+
+    document.getElementById("preview1").style.display = "none";
+    document.getElementById("preview2").style.display = "none";
+
+    fotos = {
+        foto1: "",
+        foto2: ""
+    };
+
+    document.getElementById("searchStatus").innerText = "";
+}
 /* =========================================================
    INICIALIZACIÓN
    ========================================================= */
@@ -702,6 +715,7 @@ cargarBaseDesdeRepositorio();
 pintarContadores();
 actualizarPillConexion();
 solicitarUbicacion();
+limpiarFormularioNuevoRegistro();
 if(navigator.onLine){ intentarEnviarPendientes(); }
 </script>
 </body>

@@ -676,20 +676,31 @@ if (!fotos.foto1 || !fotos.foto2) {
   statusMsg.innerText = "⏳ Enviando registro...";
 
   try {
+
     await enviarAPowerAutomate(payload);
+
     statusMsg.className = "status ok";
     statusMsg.innerText = "✔ Registro enviado exitosamente al sistema central.";
-  } catch(err){
+
+    setTimeout(() => {
+        window.location.reload();
+    }, 2000);
+
+} catch(err) {
+
     console.error("Error al enviar a Power Automate:", err);
+
     const pendientes = getPendientes();
     pendientes.push(payload);
     setPendientes(pendientes);
+
     pintarContadores();
+
     statusMsg.className = "status warn";
     statusMsg.innerText = "⚠ Sin conexión con el servidor. El registro quedó guardado y se reintentará automáticamente.";
-  }
 
-  btnEnviar.disabled = false;
+    btnEnviar.disabled = false;
+}
 
   document.getElementById("fieldForm").reset();
   document.getElementById("tecnico").value = tecnico;

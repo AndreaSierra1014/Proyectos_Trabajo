@@ -572,6 +572,8 @@ document.getElementById("fieldForm").addEventListener("submit", async function(e
   if(acepta === "SI"){
     fechaReagenda = document.getElementById("fechaReagenda").value;
 
+    console.log("Fecha seleccionada:", fechaReagenda);
+
     if(!fechaReagenda){
         statusMsg.className = "status err";
         statusMsg.innerText = "✖ Debe indicar la fecha de migración.";

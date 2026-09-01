@@ -683,8 +683,10 @@ if (!fotos.foto1 || !fotos.foto2) {
     statusMsg.innerText = "✔ Registro enviado exitosamente al sistema central.";
 
     setTimeout(() => {
-        window.location.reload();
+        location.reload();
     }, 2000);
+
+    return;
 
 } catch(err) {
 
@@ -702,15 +704,7 @@ if (!fotos.foto1 || !fotos.foto2) {
     btnEnviar.disabled = false;
 }
 
-  document.getElementById("fieldForm").reset();
-  document.getElementById("tecnico").value = tecnico;
-  document.getElementById("bloqueSi").classList.add("oculto");
-  document.getElementById("bloqueNo").classList.add("oculto");
-  document.getElementById("preview1").style.display = "none";
-  document.getElementById("preview2").style.display = "none";
-  fotos = { foto1: "", foto2: "" };
-  document.getElementById("search").value = "";
-  limpiarCamposCliente();
+
 });
 
 /* =========================================================

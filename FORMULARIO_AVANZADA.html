@@ -391,20 +391,34 @@ let ubicacionActual = null; // { lat, lon } o null si no disponible/denegado
 
 function solicitarUbicacion(){
   const geoEl = document.getElementById("geoStatus");
+
+  // Tamaño base
+  geoEl.style.fontSize = "18px";
+  geoEl.style.fontWeight = "bold";
+
   if(!("geolocation" in navigator)){
     geoEl.className = "geo-status warn";
     geoEl.innerText = "⚠ Este navegador no soporta geolocalización. Las fotos solo tendrán fecha/hora.";
     return;
   }
+
   navigator.geolocation.getCurrentPosition(
     function(pos){
-      ubicacionActual = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      ubicacionActual = {
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude
+      };
+
       geoEl.className = "geo-status ok";
+      geoEl.style.fontSize = "20px";
+      geoEl.style.fontWeight = "700";
       geoEl.innerText = `✔ Ubicación obtenida (±${Math.round(pos.coords.accuracy)}m). Las fotos incluirán coordenadas.`;
     },
     function(err){
       ubicacionActual = null;
       geoEl.className = "geo-status warn";
+      geoEl.style.fontSize = "20px";
+      geoEl.style.fontWeight = "700";
       geoEl.innerText = "⚠ Sin permiso de ubicación. Las fotos solo tendrán fecha/hora (sin coordenadas).";
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }

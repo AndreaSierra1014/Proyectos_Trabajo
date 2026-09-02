@@ -646,6 +646,13 @@ if(acepta === "NO"){
     return;
   }
 
+// Validar que las dos fotos sean obligatorias
+if (!fotos.foto1 || !fotos.foto2) {
+    statusMsg.className = "status err";
+    statusMsg.innerText = "✖ Debe tomar o cargar las dos fotos del predio antes de enviar el formulario.";
+    return;
+}
+ 
  const payload = {
     id: `${cuenta}_${Date.now()}`,
     cuenta: cuenta,

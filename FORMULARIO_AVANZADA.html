@@ -632,13 +632,6 @@ if(acepta === "NO"){
     return;
   }
 
- // Validar fotos obligatorias
-if (!fotos.foto1 || !fotos.foto2) {
-    statusMsg.className = "status err";
-    statusMsg.innerText = "✖ Debe cargar las dos evidencias fotográficas.";
-    return;
-}
-
  const payload = {
     id: `${cuenta}_${Date.now()}`,
     cuenta: cuenta,

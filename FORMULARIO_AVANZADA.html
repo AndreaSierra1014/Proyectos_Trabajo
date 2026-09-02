@@ -104,6 +104,32 @@
 
       <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0;">
 
+<h3>Validación de Datos del Cliente</h3>
+
+<div class="form-group">
+    <label for="requiereCorreccion">
+        ¿Se requiere corrección de datos del cliente?
+    </label>
+    <select id="requiereCorreccion">
+        <option value="">Seleccione una opción</option>
+        <option value="NO">No</option>
+        <option value="SI">Sí</option>
+    </select>
+</div>
+
+<div id="bloqueCorreccion" class="oculto">
+    <div class="form-group">
+        <label for="comentarioCorreccion">
+            Indique los datos que requieren corrección
+        </label>
+        <textarea
+            id="comentarioCorreccion"
+            rows="3"
+            placeholder="Ejemplo: dirección incorrecta, nombre incompleto, ciudad errada, etc.">
+        </textarea>
+    </div>
+</div>
+
       <div class="form-group">
         <label>N° Documento Técnico</label>
         <input type="text" id="tecnico" placeholder="Documento Técnico" inputmode="numeric" pattern="[0-9]*"
@@ -182,6 +208,22 @@
             </option>
 
         </select>
+     <div id="bloqueObservacionNoAcepta" class="oculto">
+
+    <div class="form-group">
+        <label for="observacionNoAcepta">
+            Indique el porqué el cliente no acepta la migración
+        </label>
+
+        <textarea
+            id="observacionNoAcepta"
+            rows="3"
+            placeholder="Describa la razón indicada por el cliente">
+        </textarea>
+
+    </div>
+
+</div>
     </div>
 </div>
 
@@ -381,6 +423,49 @@ document.getElementById("aceptaMigracion").addEventListener("change", function(e
 
         fechaReagenda.value = "";
         razonNoMigracion.value = "";
+    }
+});
+ /* =========================================================
+   CORRECCIÓN DE DATOS DEL CLIENTE
+   ========================================================= */
+
+document.getElementById("requiereCorreccion").addEventListener("change", function(){
+
+    const bloque = document.getElementById("bloqueCorreccion");
+    const comentario = document.getElementById("comentarioCorreccion");
+
+    if(this.value === "SI"){
+
+        bloque.classList.remove("oculto");
+        comentario.required = true;
+
+    }else{
+
+        bloque.classList.add("oculto");
+        comentario.required = false;
+        comentario.value = "";
+    }
+});
+
+ /* =========================================================
+   OBSERVACIÓN CUANDO CLIENTE NO ACEPTA MIGRACIÓN
+   ========================================================= */
+
+document.getElementById("RazonNoMigracion").addEventListener("change", function(){
+
+    const bloqueObs = document.getElementById("bloqueObservacionNoAcepta");
+    const observacion = document.getElementById("observacionNoAcepta");
+
+    if(this.value === "Cliente no acepta migración"){
+
+        bloqueObs.classList.remove("oculto");
+        observacion.required = true;
+
+    }else{
+
+        bloqueObs.classList.add("oculto");
+        observacion.required = false;
+        observacion.value = "";
     }
 });
 
@@ -706,6 +791,18 @@ if (!fotos.foto1 || !fotos.foto2) {
   btnEnviar.disabled = false;
 
   document.getElementById("fieldForm").reset();
+  document.getElementById("requiereCorreccion").value = "";
+  document.getElementById("comentarioCorreccion").value = "";
+  
+  document.getElementById("observacionNoAcepta").value = "";
+  
+  document
+      .getElementById("bloqueCorreccion")
+      .classList.add("oculto");
+  
+  document
+      .getElementById("bloqueObservacionNoAcepta")
+      .classList.add("oculto");
   document.getElementById("tecnico").value = tecnico;
   document.getElementById("bloqueSi").classList.add("oculto");
   document.getElementById("bloqueNo").classList.add("oculto");
@@ -724,6 +821,12 @@ pintarContadores();
 actualizarPillConexion();
 solicitarUbicacion();
 if(navigator.onLine){ intentarEnviarPendientes(); }
+
+ // Ocultar bloques adicionales al iniciar
+
+document.getElementById("bloqueCorreccion").classList.add("oculto");
+
+document.getElementById("bloqueObservacionNoAcepta").classList.add("oculto");
 </script>
 </body>
 </html>

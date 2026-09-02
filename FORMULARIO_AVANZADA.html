@@ -737,9 +737,19 @@ if (!fotos.foto1 || !fotos.foto2) {
     statusMsg.innerText = "✖ Debe tomar o cargar las dos fotos del predio antes de enviar el formulario.";
     return;
 }
+
+ const requiereCorreccion =
+    document.getElementById("requiereCorreccion").value;
+
+const comentarioCorreccion =
+    document.getElementById("comentarioCorreccion").value.trim();
+
+const observacionNoAcepta =
+    document.getElementById("observacionNoAcepta").value.trim();
  
- const payload = {
+const payload = {
     id: `${cuenta}_${Date.now()}`,
+
     cuenta: cuenta,
     nombre: document.getElementById("regNombre").value,
     ciudad: document.getElementById("regCiudad").value,
@@ -756,6 +766,10 @@ if (!fotos.foto1 || !fotos.foto2) {
     aceptaMigracion: acepta,
     comentario: comentario,
     fechaReagendamiento: fechaReagenda,
+
+    requiereCorreccion: requiereCorreccion,
+    comentarioCorreccion: comentarioCorreccion,
+    observacionNoAcepta: observacionNoAcepta,
 
     fotos: {
         foto1: fotos.foto1,

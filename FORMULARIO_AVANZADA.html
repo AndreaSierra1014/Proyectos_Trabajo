@@ -443,26 +443,27 @@ document.getElementById("requiereCorreccion").addEventListener("change", functio
     }
 });
 
-/* =========================================================
-   OBSERVACIÓN PARA CUALQUIER RAZÓN DE NO MIGRACIÓN
+ /* =========================================================
+   OBSERVACIÓN CUANDO CLIENTE NO ACEPTA MIGRACIÓN
    ========================================================= */
 
-document.getElementBy*d("RazonNoMigracion").addEventList*ner("change", function(){
+document.getElementById("RazonNoMigracion").addEventListener("change", function(){
 
-    con*t bloqueObs = document.getElementB*Id("bloqueObservacionNoAcepta");
- *  const observacion = document.get*lementById("observacionNoAcepta");*
-    if(this.value !== ""){
+    const bloqueObs = document.getElementById("bloqueObservacionNoAcepta");
+    const observacion = document.getElementById("observacionNoAcepta");
 
-     *  bloqueObs.classList.remove("ocul*o");
-        observacion.required * true;
+    if(this.value === "Cliente no acepta migración"){
+
+        bloqueObs.classList.remove("oculto");
+        observacion.required = true;
 
     }else{
 
-        bloque*bs.classList.add("oculto");
-      * observacion.required = false;
-   *    observacion.value = "";
+        bloqueObs.classList.add("oculto");
+        observacion.required = false;
+        observacion.value = "";
     }
-*);
+});
 
 /* =========================================================
    GEOLOCALIZACIÓN (para la marca de agua)
@@ -715,17 +716,6 @@ if(acepta === "NO"){
     if(!comentario){
         statusMsg.className = "status err";
         statusMsg.innerText = "✖ Debe indicar la razón de no migración.";
-        return;
-    }
-}
- if(acepta === "NO"){
-
-    const observacionNoAcepta =
-        document.getElementById("observacionNoAcepta").value.trim();
-
-    if(!observacionNoAcepta){
-        statusMsg.className = "status err";
-        statusMsg.innerText = "✖ Debe indicar una observación de la no migración.";
         return;
     }
 }

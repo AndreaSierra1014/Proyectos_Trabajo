@@ -211,7 +211,7 @@
 
     <div class="form-group">
         <label for="observacionNoAcepta">
-            Indique el porqué el cliente no acepta la migración
+            Observaciones sobre la razón de no migración
         </label>
         <textarea
             id="observacionNoAcepta"
@@ -452,7 +452,8 @@ document.getElementById("RazonNoMigracion").addEventListener("change", function(
     const bloqueObs = document.getElementById("bloqueObservacionNoAcepta");
     const observacion = document.getElementById("observacionNoAcepta");
 
-    if(this.value === "Cliente no acepta migración"){
+    // Si selecciona cualquier razón, mostrar observaciones
+    if(this.value !== ""){
 
         bloqueObs.classList.remove("oculto");
         observacion.required = true;

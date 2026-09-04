@@ -728,6 +728,13 @@ if(acepta === "NO"){
     return;
   }
 
+ // Validar que se hayan obtenido coordenadas GPS
+if (!ubicacionActual || !ubicacionActual.lat || !ubicacionActual.lon) {
+    statusMsg.className = "status err";
+    statusMsg.innerText = "✖ Debe permitir el acceso a la ubicación GPS antes de enviar el formulario.";
+    return;
+}
+
 // Validar que las dos fotos sean obligatorias
 if (!fotos.foto1 || !fotos.foto2) {
     statusMsg.className = "status err";

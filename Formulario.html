@@ -444,6 +444,57 @@ document.getElementById("search").addEventListener("keydown", function(e){
   if(e.key === "Enter"){ e.preventDefault(); buscarCuenta(); }
 });
 
+ document
+  .getElementById("coberturaFTTX")
+  .addEventListener("change", function () {
+
+    const cobertura = this.value;
+    const bloqueGestion = document.getElementById("bloqueGestionCompleta");
+    const tecnico = document.getElementById("tecnico");
+    const aceptaMigracion = document.getElementById("aceptaMigracion");
+    const fechaReagenda = document.getElementById("fechaReagenda");
+    const razonNoMigracion = document.getElementById("RazonNoMigracion");
+    const observacionNoAcepta = document.getElementById("observacionNoAcepta");
+
+    if (
+      cobertura === "SI" ||
+      cobertura === "NO VERIFICABLE"
+    ) {
+      bloqueGestion.classList.remove("oculto");
+
+      tecnico.required = true;
+      aceptaMigracion.required = true;
+
+      return;
+    }
+
+    bloqueGestion.classList.add("oculto");
+
+    tecnico.required = false;
+    aceptaMigracion.required = false;
+    fechaReagenda.required = false;
+    razonNoMigracion.required = false;
+    observacionNoAcepta.required = false;
+
+    tecnico.value = "";
+    aceptaMigracion.value = "";
+    fechaReagenda.value = "";
+    razonNoMigracion.value = "";
+    observacionNoAcepta.value = "";
+
+    document
+      .getElementById("bloqueSi")
+      .classList.add("oculto");
+
+    document
+      .getElementById("bloqueNo")
+      .classList.add("oculto");
+
+    document
+      .getElementById("bloqueObservacionNoAcepta")
+      .classList.add("oculto");
+  });
+
 /* =========================================================
    MOSTRAR/OCULTAR BLOQUES SEGÚN ACEPTACIÓN DEL CLIENTE
    ========================================================= */
@@ -756,42 +807,111 @@ document.getElementById("fieldForm").addEventListener("submit", async function(e
     return;
   }
 
-  const acepta = document.getElementById("aceptaMigracion").value;
-  if(!acepta){
+  const coberturaFTTX =
+  document.getElementById("coberturaFTTX").value;
+
+if (!coberturaFTTX) {
+  statusMsg.className = "status err";
+  statusMsg.innerText =
+    "✖ Selecciona si el cliente tiene cobertura FTTX.";
+  return;
+}
+
+const requiereCorreccion =
+  document.getElementById("requiereCorreccion").value;
+
+const comentarioCorreccion =
+  document.getElementById("comentarioCorreccion").value.trim();
+
+if (!requiereCorreccion) {
+  statusMsg.className = "status err";
+  statusMsg.innerText =
+    "✖ Indica si se requiere corrección de los datos del cliente.";
+  return;
+}
+
+if (
+  requiereCorreccion === "SI" &&
+  !comentarioCorreccion
+) {
+  statusMsg.className = "status err";
+  statusMsg.innerText =
+    "✖ Indica cuáles datos requieren corrección.";
+  return;
+}
+
+let acepta = "";
+let comentario = "";
+let fechaReagenda = "";
+let tecnico = "";
+let observacionNoAcepta = "";
+
+if (
+  coberturaFTTX === "SI" ||
+  coberturaFTTX === "NO VERIFICABLE"
+) {
+  tecnico =
+    document.getElementById("tecnico").value.trim();
+
+  if (!tecnico) {
     statusMsg.className = "status err";
-    statusMsg.innerText = "✖ Selecciona si el cliente acepta o no la migración.";
+    statusMsg.innerText =
+      "✖ Indica el número de documento del técnico.";
     return;
   }
 
-  let comentario = "", fechaReagenda = "";
-  if(acepta === "SI"){
-    fechaReagenda = document.getElementById("fechaReagenda").value;
+  acepta =
+    document.getElementById("aceptaMigracion").value;
 
-    console.log("Fecha seleccionada:", fechaReagenda);
-
-    if(!fechaReagenda){
-        statusMsg.className = "status err";
-        statusMsg.innerText = "✖ Debe indicar la fecha de migración.";
-        return;
-    }
-}
-
-if(acepta === "NO"){
-    comentario = document.getElementById("RazonNoMigracion").value;
-
-    if(!comentario){
-        statusMsg.className = "status err";
-        statusMsg.innerText = "✖ Debe indicar la razón de no migración.";
-        return;
-    }
-}
-
-  const tecnico = document.getElementById("tecnico").value.trim();
-  if(!tecnico){
+  if (!acepta) {
     statusMsg.className = "status err";
-    statusMsg.innerText = "✖ Indica el nombre del técnico/aliado que diligencia.";
+    statusMsg.innerText =
+      "✖ Selecciona si el cliente acepta o no la migración.";
     return;
   }
+
+  if (acepta === "SI") {
+    fechaReagenda =
+      document.getElementById("fechaReagenda").value;
+
+    if (!fechaReagenda) {
+      statusMsg.className = "status err";
+      statusMsg.innerText =
+        "✖ Debe indicar la fecha de migración.";
+      return;
+    }
+  }
+
+  if (acepta === "NO") {
+    comentario =
+      document.getElementById("RazonNoMigracion").value;
+
+    observacionNoAcepta =
+      document.getElementById("observacionNoAcepta").value.trim();
+
+    if (!comentario) {
+      statusMsg.className = "status err";
+      statusMsg.innerText =
+        "✖ Debe indicar la razón de no migración.";
+      return;
+    }
+
+    if (!observacionNoAcepta) {
+      statusMsg.className = "status err";
+      statusMsg.innerText =
+        "✖ Debe registrar una observación sobre la razón de no migración.";
+      return;
+    }
+  }
+}
+
+if (coberturaFTTX === "NO") {
+  tecnico = "";
+  acepta = "";
+  comentario = "Sin cobertura FTTX";
+  fechaReagenda = "";
+  observacionNoAcepta = "";
+}
 
  // Validar que se hayan obtenido coordenadas GPS
 if (!ubicacionActual || !ubicacionActual.lat || !ubicacionActual.lon) {
@@ -817,35 +937,37 @@ const observacionNoAcepta =
     document.getElementById("observacionNoAcepta").value.trim();
  
 const payload = {
-    id: `${cuenta}_${Date.now()}`,
+  id: `${cuenta}_${Date.now()}`,
 
-    cuenta: cuenta,
-    nombre: document.getElementById("regNombre").value,
-    ciudad: document.getElementById("regCiudad").value,
-    direccion: document.getElementById("regDireccion").value,
-    regional: document.getElementById("regRegional").value,
-    tipoPredio: document.getElementById("regTipoPredio").value,
-    aliado: document.getElementById("regAliado").value,
-    estadoHomologado: document.getElementById("regEstadoHomologado").value,
+  cuenta: cuenta,
+  nombre: document.getElementById("regNombre").value,
+  ciudad: document.getElementById("regCiudad").value,
+  direccion: document.getElementById("regDireccion").value,
+  regional: document.getElementById("regRegional").value,
+  tipoPredio: document.getElementById("regTipoPredio").value,
+  aliado: document.getElementById("regAliado").value,
+  estadoHomologado: document.getElementById("regEstadoHomologado").value,
 
-    latitud: ubicacionActual ? ubicacionActual.lat : "",
-    longitud: ubicacionActual ? ubicacionActual.lon : "",
+  coberturaFTTX: coberturaFTTX,
 
-    tecnico: tecnico,
-    aceptaMigracion: acepta,
-    comentario: comentario,
-    fechaReagendamiento: fechaReagenda,
+  latitud: ubicacionActual ? ubicacionActual.lat : "",
+  longitud: ubicacionActual ? ubicacionActual.lon : "",
 
-    requiereCorreccion: requiereCorreccion,
-    comentarioCorreccion: comentarioCorreccion,
-    observacionNoAcepta: observacionNoAcepta,
+  tecnico: tecnico,
+  aceptaMigracion: acepta,
+  comentario: comentario,
+  fechaReagendamiento: fechaReagenda,
 
-    fotos: {
-        foto1: fotos.foto1,
-        foto2: fotos.foto2
-    },
+  requiereCorreccion: requiereCorreccion,
+  comentarioCorreccion: comentarioCorreccion,
+  observacionNoAcepta: observacionNoAcepta,
 
-    fechaRegistro: new Date().toISOString()
+  fotos: {
+    foto1: fotos.foto1,
+    foto2: fotos.foto2
+  },
+
+  fechaRegistro: new Date().toISOString()
 };
 
   const registros = getRegistros();

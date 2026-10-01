@@ -37,8 +37,18 @@
 <div class="form-group"><label>Tipo de Predio</label><input type="text" id="regTipoPredio" readonly></div>
 </div>
 <div class="row2">
-<div class="form-group"><label>Aliado</label><input type="text" id="regAliado" readonly></div>
-<div class="form-group"><label>Tipo de Red</label><input type="text" id="regEstadoHomologado" readonly></div>
+    <div class="form-group">
+        <label>Aliado</label>
+        <input type="text" id="regAliado" readonly>
+    </div>
+    <div class="form-group">
+        <label>Tipo de Red</label>
+        <input type="text" id="regEstadoHomologado" readonly>
+    </div>
+</div>
+<div class="form-group">
+    <label>OLT / NAP</label>
+    <input type="text" id="regOLTNAP" readonly>
 </div>
 </div>
 <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0">
@@ -56,7 +66,14 @@
 <div class="form-group">
 <label for="coberturaFTTX">¿El cliente tiene cobertura FTTX?</label>
 <select id="coberturaFTTX" required>
-<option value="">Seleccione una opción</option><option value="SI">Sí</option><option value="NO">No</option><option value="NO VERIFICABLE">No verificable</option>
+<option value="">Seleccione una opción</option><option value="SI">Sí</option>
+<option value="NO VERIFICABLE">No verificable (Se requiere apertura de camaras / ingresos especiales / etc)</option>
+<option value="No se encuentra dirección del cliente">No se encuentra dirección del cliente</option>
+<option value="NO hay red FTTX">NO hay red FTTX</option>
+<option value="NO, Sin NAP a menos de 220 mts">NO, Sin NAP a menos de 220 mts</option>
+<option value="NO, Edificio/CC no acometido">NO, Edificio/CC no acometido</option>
+<option value="NO, Puertos copados">NO, Puertos copados</option>
+<option value="NO, Sin factibilidad de Visor (Puertos lógicos o cobertura)">NO, Sin factibilidad de Visor (Puertos lógicos o cobertura)</option>
 </select>
 </div>
 <div class="form-group"><label for="tecnico">N° Documento Técnico</label><input type="text" id="tecnico" placeholder="Documento Técnico" inputmode="numeric" pattern="[0-9]*" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
@@ -78,17 +95,13 @@
 <option value="Cliente esta en proceso de cancelación">Cliente esta en proceso de cancelación</option>
 <option value="Cliente requiere que lo llamen / Comunicación oficial">Cliente requiere que lo llamen / Comunicación oficial</option>
 <option value="No se encuentra el titular encargado de la cuenta">No se encuentra el titular encargado de la cuenta</option>
-<option value="Sin cobertura de red FTTX">Sin cobertura de red FTTX</option>
 <option value="Administración no permite el ingreso">Administración no permite el ingreso</option>
 <option value="Cliente se trasladó de predio">Cliente se trasladó de predio</option>
-<option value="Puertos en NAP copados">Puertos en NAP copados</option>
-<option value="No se encuentra dirección del cliente / Local">No se encuentra dirección del cliente / Local</option>
 <option value="Problemas de infraestructura (Ducteria / Obra Civil / Etc)">Problemas de infraestructura (Ducteria / Obra Civil / Etc)</option>
-<option value="Factibilidad negativa por Visor">Factibilidad negativa por Visor</option>
 <option value="Cliente no acepta migración">Cliente no acepta migración</option>
-<option value="Zona Roja">Zona Roja</option><option value="Cliente desinstalado">Cliente desinstalado</option><option value="Cliente migrado">Cliente migrado</option><option value="Cortesía">Cortesía</option><option value="CTO sin puertos lógicos disponibles">CTO sin puertos lógicos disponibles</option>
+<option value="Zona Roja">Zona Roja</option><option value="Cliente desinstalado">Cliente desinstalado</option><option value="Cliente migrado">Cliente migrado</option><option value="Cortesía">Cortesía</option>
 </select>
-<div id="bloqueObservacionNoAcepta" class="oculto"><div class="form-group"><label for="observacionNoAcepta">Observaciones sobre la razón de no migración</label><textarea id="observacionNoAcepta" rows="3" placeholder="Indique las observaciones"></textarea></div></div>
+<div id="bloqueObservacionNoAcepta" class="oculto"><div class="form-group"><label for="observacionNoAcepta">Observaciones sobre la razón de no migración</label><textarea id="observacionNoAcepta" rows="3" placeholder="Describa la razón indicada por el cliente"></textarea></div></div>
 </div>
 </div>
 </div>
@@ -115,7 +128,21 @@ function pintarEstadoBase(n,origen){const el=document.getElementById("baseStatus
 async function cargarBaseDesdeRepositorio(){try{const resp=await fetch(BASE_JSON_URL,{cache:"no-store"});if(!resp.ok)throw new Error("HTTP "+resp.status);const data=await resp.json();baseCuentas=data;pintarEstadoBase(Object.keys(data).length,"· descargada del servidor")}catch(err){const cache=getBaseCache(),n=Object.keys(cache).length;baseCuentas=cache;n>0?pintarEstadoBase(n,"· modo sin conexión"):pintarEstadoBase(0,"");console.warn(err)}}
 function actualizarPillConexion(){const pill=document.getElementById("pillConexion");pill.className=navigator.onLine?"pill-conexion online":"pill-conexion offline";pill.innerText=navigator.onLine?"🟢 En línea":"🟡 Sin conexión (modo offline)"}
 window.addEventListener("online",actualizarPillConexion);window.addEventListener("offline",actualizarPillConexion);
-function limpiarCamposCliente(){["regCuenta","regNombre","regCiudad","regDireccion","regRegional","regTipoPredio","regAliado","regEstadoHomologado"].forEach(id=>document.getElementById(id).value="")}
+function limpiarCamposCliente(){
+    [
+        "regCuenta",
+        "regNombre",
+        "regCiudad",
+        "regDireccion",
+        "regRegional",
+        "regTipoPredio",
+        "regAliado",
+        "regEstadoHomologado",
+        "regOLTNAP"
+    ].forEach(id =>
+        document.getElementById(id).value = ""
+    );
+}
 function buscarCuenta(){const val=normKey(document.getElementById("search").value),st=document.getElementById("searchStatus"),item=baseCuentas[val];if(!val){st.className="status err";st.innerText="Escribe un número de cuenta.";return}if(!item){limpiarCamposCliente();st.className="status err";st.innerText="⚠ Cuenta no encontrada en la base cargada.";return}document.getElementById("regCuenta").value=item.cuenta??val;document.getElementById("regNombre").value=item.nombre??"";document.getElementById("regCiudad").value=item.ciudad??"";document.getElementById("regDireccion").value=item.direccion??"";document.getElementById("regRegional").value=item.regional??"";document.getElementById("regTipoPredio").value=item.tipoPredio??"";document.getElementById("regAliado").value=item.aliado??"";document.getElementById("regEstadoHomologado").value=item.estadoHomologado??"";st.className="status ok";st.innerText="✔ Cuenta encontrada y datos cargados."}
 document.getElementById("btnBuscar").addEventListener("click",buscarCuenta);document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();buscarCuenta()}});
 function limpiarGestionCliente(){const ids=["aceptaMigracion","fechaReagenda","RazonNoMigracion","observacionNoAcepta"];ids.forEach(id=>document.getElementById(id).value="");["bloqueSi","bloqueNo","bloqueObservacionNoAcepta"].forEach(id=>document.getElementById(id).classList.add("oculto"));ids.forEach(id=>document.getElementById(id).required=false)}

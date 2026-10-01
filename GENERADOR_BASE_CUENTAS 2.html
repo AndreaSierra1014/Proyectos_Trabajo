@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Administrador de Base de Cuentas - Formulario de Campo</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background:#f3f4f6; margin:0; padding:24px; color:#1f2937; }
+  .container { max-width:640px; margin:0 auto; background:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 6px rgba(0,0,0,0.07); }
+  h2 { margin-top:0; text-align:center; }
+  p.desc { color:#6b7280; font-size:0.9rem; }
+  .upload-zone { border:2px dashed #cbd5e1; padding:24px; text-align:center; border-radius:10px; background:#f8fafc; cursor:pointer; margin:16px 0; }
+  .upload-zone:hover { border-color:#2563eb; background:#eff6ff; }
+  input[type=file] { display:none; }
+  .status { margin-top:14px; font-size:0.9rem; font-weight:600; text-align:center; }
+  .status.ok { color:#15803d; }
+  .status.err { color:#b91c1c; }
+  .btn { width:100%; border:none; padding:12px; border-radius:8px; font-weight:700; font-size:0.95rem; cursor:pointer; margin-top:10px; }
+  .btn-success { background:#16a34a; color:#fff; }
+  .btn-success:disabled { background:#9ca3af; cursor:not-allowed; }
+  table { width:100%; border-collapse:collapse; margin-top:16px; font-size:0.82rem; }
+  th, td { border:1px solid #e5e7eb; padding:6px 8px; text-align:left; }
+  th { background:#111827; color:#fff; }
+  .info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; font-size:0.85rem; margin-top:16px; }
+  .peso-box { background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:12px; font-size:0.85rem; margin-top:12px; }
+  code { background:#f1f5f9; padding:2px 6px; border-radius:4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>🔧 Administrador de Base de Cuentas</h2>
+  <p class="desc">
+    Herramienta de administración de datos para el <b>Formulario de Levantamiento en Campo</b>.
+    Carga el Excel maestro de cuentas (<code>CUENTA, NOMBRE, CIUDAD, DIRECCION, REGIONAL, TIPO DE PREDIO, ALIADO, ESTADO HOMOLOGADO</code>)
+    y genera automáticamente el archivo <code>base_cuentas.json</code>, listo para publicar en el repositorio junto al
+    formulario (<code>index.html</code>), garantizando que la información se mantenga siempre actualizada y centralizada.
+  </p>
+
+  <div class="upload-zone" onclick="document.getElementById('excelFile').click()">
+    <p style="margin:0;font-weight:600;">📂 Haz clic aquí para subir tu Excel/CSV</p>
+    <span style="font-size:0.8rem;color:#6b7280;">Columnas esperadas: CUENTA, NOMBRE, CIUDAD, DIRECCION, REGIONAL, TIPO DE PREDIO, ALIADO, ESTADO HOMOLOGADO</span>
+    <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+  </div>
+
+  <div id="status" class="status"></div>
+  <div id="preview"></div>
+
+  <button class="btn btn-success" id="btnDescargar" disabled>⬇️ Descargar base_cuentas.json</button>
+
+  <div class="info-box" id="pesoInfo" style="display:none;"></div>
+
+  <div class="peso-box">
+    💡 <b>Cómo actualizar la base en GitHub:</b><br>
+    1. Sube tu Excel actualizado aquí (día a día / semana a semana).<br>
+    2. Descarga el nuevo <code>base_cuentas.json</code>.<br>
+    3. En tu repositorio de GitHub, reemplaza el archivo <code>base_cuentas.json</code> por este nuevo (arrastrar y soltar o "Upload files" → confirma el reemplazo).<br>
+    4. <b>No toques el archivo <code>index.html</code></b>, ese no cambia. El formulario lo leerá automáticamente en el siguiente acceso del técnico.
+  </div>
+</div>
+
+<script>
+let baseGenerada = null;
+
+function normKey(v){ return String(v ?? "").trim(); }
+
+document.getElementById('excelFile').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try {
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, { type: "array" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      const base = {};
+      let contador = 0;
+      rows.forEach(r => {
+        const rowNorm = {};
+        Object.keys(r).forEach(k => { rowNorm[k.trim().toUpperCase()] = r[k]; });
+        const cuenta = normKey(rowNorm["CUENTA"]);
+        if(!cuenta) return;
+        base[cuenta] = {
+        cuenta: cuenta,
+        nombre: rowNorm["NOMBRE"] || "",
+        ciudad: rowNorm["CIUDAD"] || "",
+        direccion: rowNorm["DIRECCION"] || "",
+        regional: rowNorm["REGIONAL"] || "",
+        tipoPredio: rowNorm["TIPO DE PREDIO"] || "",
+        aliado: rowNorm["ALIADO"] || "",
+        estadoHomologado: rowNorm["ESTADO HOMOLOGADO"] || "",
+        oltNap: rowNorm["OLT/NAP"] || ""
+      };
+              contador++;
+      });
+
+      baseGenerada = base;
+      const st = document.getElementById('status');
+      st.className = "status ok";
+      st.innerText = `✔ ${contador} cuentas procesadas correctamente.`;
+
+      // Vista previa (primeras 5 filas)
+      const filas = Object.values(base).slice(0, 5);
+      let html = "<table><tr><th>Cuenta</th><th>Nombre</th><th>Ciudad</th><th>Regional</th><th>Aliado</th></tr>";
+      filas.forEach(f => {
+        html += `<tr><td>${f.cuenta}</td><td>${f.nombre}</td><td>${f.ciudad}</td><td>${f.regional}</td><td>${f.aliado}</td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById('preview').innerHTML = html + (contador > 5 ? `<p style="font-size:0.8rem;color:#6b7280;">... y ${contador - 5} más.</p>` : "");
+
+      // Estimación de peso
+      const jsonStr = JSON.stringify(base);
+      const bytes = new Blob([jsonStr]).size;
+      const kb = (bytes/1024).toFixed(1);
+      const mb = (bytes/1024/1024).toFixed(2);
+      const pesoInfo = document.getElementById('pesoInfo');
+      pesoInfo.style.display = "block";
+      pesoInfo.innerHTML = `📦 Peso estimado del archivo <code>base_cuentas.json</code>: <b>${bytes > 1024*1024 ? mb + ' MB' : kb + ' KB'}</b> para ${contador} cuentas. ` +
+        (bytes > 3*1024*1024 ? "⚠ Es un archivo grande; seguirá funcionando bien en GitHub Pages, pero la primera carga en campo puede tardar unos segundos según la señal del técnico." : "Este peso es liviano y cargará rápido incluso con datos móviles.");
+
+      document.getElementById('btnDescargar').disabled = false;
+    } catch(err){
+      const st = document.getElementById('status');
+      st.className = "status err";
+      st.innerText = "✖ Error leyendo el archivo: " + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+document.getElementById('btnDescargar').addEventListener('click', function(){
+  if(!baseGenerada) return;
+  const blob = new Blob([JSON.stringify(baseGenerada)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "base_cuentas.json";
+  link.click();
+});
+</script>
+</body>
+</html>

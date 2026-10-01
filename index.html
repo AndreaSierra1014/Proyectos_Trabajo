@@ -143,7 +143,48 @@ function limpiarCamposCliente(){
         document.getElementById(id).value = ""
     );
 }
-function buscarCuenta(){const val=normKey(document.getElementById("search").value),st=document.getElementById("searchStatus"),item=baseCuentas[val];if(!val){st.className="status err";st.innerText="Escribe un número de cuenta.";return}if(!item){limpiarCamposCliente();st.className="status err";st.innerText="⚠ Cuenta no encontrada en la base cargada.";return}document.getElementById("regCuenta").value=item.cuenta??val;document.getElementById("regNombre").value=item.nombre??"";document.getElementById("regCiudad").value=item.ciudad??"";document.getElementById("regDireccion").value=item.direccion??"";document.getElementById("regRegional").value=item.regional??"";document.getElementById("regTipoPredio").value=item.tipoPredio??"";document.getElementById("regAliado").value=item.aliado??"";
+function buscarCuenta() {
+
+    const val = normKey(document.getElementById("search").value);
+    const st = document.getElementById("searchStatus");
+    const item = baseCuentas[val];
+
+    if (!val) {
+        st.className = "status err";
+        st.innerText = "Escribe un número de cuenta.";
+        return;
+    }
+
+    if (!item) {
+        limpiarCamposCliente();
+        st.className = "status err";
+        st.innerText = "⚠ Cuenta no encontrada en la base cargada.";
+        return;
+    }
+
+    console.log("Cuenta encontrada:", item);
+
+    document.getElementById("regCuenta").value = item.cuenta ?? val;
+    document.getElementById("regNombre").value = item.nombre ?? "";
+    document.getElementById("regCiudad").value = item.ciudad ?? "";
+    document.getElementById("regDireccion").value = item.direccion ?? "";
+    document.getElementById("regRegional").value = item.regional ?? "";
+    document.getElementById("regTipoPredio").value = item.tipoPredio ?? "";
+    document.getElementById("regAliado").value = item.aliado ?? "";
+    document.getElementById("regEstadoHomologado").value = item.estadoHomologado ?? "";
+
+    document.getElementById("regOLTNAP").value =
+        item.oltNap ??
+        item["OLT/NAP"] ??
+        item["OLT / NAP"] ??
+        item["OLT NAP"] ??
+        "";
+
+    console.log("OLT/NAP encontrado:", document.getElementById("regOLTNAP").value);
+
+    st.className = "status ok";
+    st.innerText = "✔ Cuenta encontrada y datos cargados.";
+
 document.getElementById("regEstadoHomologado").value=item.estadoHomologado??"";
 document.getElementById("regOLTNAP").value=item.oltNap??"";}
 document.getElementById("btnBuscar").addEventListener("click",buscarCuenta);document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();buscarCuenta()}});
